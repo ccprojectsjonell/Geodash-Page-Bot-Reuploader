@@ -4,34 +4,28 @@ module.exports = {
   name: 'songreupload',
   onCmds: async ({ bot, event, args }) => {
     const url = args[0];
-    if (!url) {
-      return bot.send('Please provide a song URL YT');
-    }
+    if (!url) return bot.send('Please provide a song URL YT');
  
     try {
       bot.send("Reuploading Song.......");
       const response = await axios.get(`https://geodash.click/api/songReupload4bot.php`, {
-        params: {
-          apikey: 'jonell@143',
-          url: url
-        }
+        params: { apikey: 'jonell@143', url }
       });
 
-      const data = response.data;
+      const { status, response: responseMessage, song_id, title } = response.data;
+      const successBold = global.fonts.bold("✅ Successfully Reuploaded");
+      const alreadyReuploadedBold = global.fonts.bold("✅ Already Reuploaded Song");
 
-      if (data.status === true) {
-        const { response: responseMessage, song_id, title } = data;
- const bold = global.fonts.bold("✅ Successfully Reuploaded");
-        const database = global.fonts.bold("✅ Already Reuploaded Song");
+      if (status) {
         if (responseMessage === "Successfully reuploaded to the database") {
-          bot.send(`${bold}\n${global.line}\nReuploaded Successfully In GeoDash:\n📝 Titile: ${title}\n🆔 SongID: ${song_id}.`);
+          bot.send(`${successBold}\n${global.line}\nReuploaded Successfully In GeoDash:\n📝 Title: ${title}\n🆔 SongID: ${song_id}.`);
         } else if (responseMessage === "This song url has been reupload already") {
-          bot.send(`${database}\n${global.line}\nThis song is Already Reupload\n📝 Titile: ${title}\n🆔 SongID: ${song_id}.`);
+          bot.send(`${alreadyReuploadedBold}\n${global.line}\nThis song is Already Reupload\n📝 Title: ${title}\n🆔 SongID: ${song_id}.`);
         } else {
-          bot.send(error.message);
+          bot.send(responseMessage);
         }
       } else {
-        bot.send(error.message);
+        bot.send("Reupload failed i think this a copyright issue this YouTube link try another link");
       }
     } catch (error) {
       bot.send(error.message);
